@@ -130,7 +130,7 @@ def favicon(site):
 def index():
     return render_template('index.html', sites=g.sites.values())
 
-@app.route('/img/<path:filename>', subdomain='<subdomain>')
+@app.route('/sites/<subdomain>/img/<path:filename>')
 @sited
 def img(site, filename):
     # site.subdomain is trusted, so using plain os.path.join is safe.
