@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block body %}
+    <h1>Not yet…</h1>
+    <img src="{{ no_image }}" />
+    <div id="danielCountdown"></div>
+    <script>
+    $(function() {
+        var arrival = new Date(
+            {{ arrival.year }},
+            {{ arrival.month }} - 1,
+            {{ arrival.day }},
+            {{ arrival.hour }},
+            {{ arrival.minute }},
+            {{ arrival.second }});
+        {% with o = arrival.utcoffset() %}
+        var offset = {{ (o.days * 24 * 60) + (o.seconds / 60) }};
+        {% endwith %}
+        startCountdown('#danielCountdown', arrival, offset,
+                       "{{ url_for('yes', subdomain=site.subdomain) }}");
+    });
+    </script>
+{% endblock %}

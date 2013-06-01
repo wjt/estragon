@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block body %}
+    <h1>Yes!!!</h1>
+    <div id="puggrid">
+      {% set puggy = cycler(*pugs) %}
+      <img src="{{ puggy.next() }}" class=pug alt='pug' />
+      <img src="{{ puggy.next() }}" class=pug alt='pug' />
+      <img src="{{ puggy.next() }}" class=pug alt='pug' />
+      <img src="{{ puggy.next() }}" class=pug alt='pug' />
+      <img src="{{ haircut }}" class=haircut />
+      <img src="{{ puggy.next() }}" class=pug alt='pug' />
+      <img src="{{ puggy.next() }}" class=pug alt='pug' />
+      <img src="{{ puggy.next() }}" class=pug alt='pug' />
+      <img src="{{ puggy.next() }}" class=pug alt='pug' />
+    </div>
+{% endblock %}

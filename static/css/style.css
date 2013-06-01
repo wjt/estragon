@@ -1,0 +1,68 @@
+#danielCountdown {
+  width: 240px;
+  height: 45px;
+  float: none;
+  margin-left: auto;
+  margin-right: auto;
+  border-color: #fde4a7;
+  color: #71979f;
+  background: #01344d;
+  font-weight: bold;
+  padding: 5px;
+  font-variant: small-caps;
+}
+
+h1 {
+  font-size: 80pt;
+  font-variant: small-caps;
+  margin: 0 auto 5px auto;
+  background: #01344d;
+  width: 480px;
+  border: 10px solid #d91a21;
+  color: #71979f;
+}
+
+h2 {
+  font-size: 20pt;
+  margin: 0 auto 5px auto;
+  color: #01344d;
+}
+
+body {
+  text-align: center;
+  margin: 0 auto;
+  background: #71979f;
+  font-family: Bitter, serif;
+  width: 500px;
+}
+
+#credits {
+  margin-top: 1em;
+  font-variant: small-caps;
+  font-size: small;
+  padding: 2px;
+}
+
+a {
+  color: #01344d;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+#puggrid {
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.pug, .haircut {
+  width: 150px;
+  height: 150px;
+}
+
+.site-list {
+  list-style: none;
+}
