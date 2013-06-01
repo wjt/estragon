@@ -13,7 +13,8 @@ app.config.from_envvar('ESTRAGON_SETTINGS', silent=True)
 
 Site = namedtuple('Site',
     ['subdomain', 'title', 'arrival', 'no_image', 'yes_images', 'favicon_name'])
-Site.is_here_yet = lambda self: pytz.UTC.localize(datetime.utcnow()) >= self.arrival
+Site.is_here_yet = lambda self: self.arrival is not None and \
+                                pytz.UTC.localize(datetime.utcnow()) >= self.arrival
 
 @app.before_request
 def before_request():
@@ -28,13 +29,19 @@ def before_request():
                     continue
 
                 try:
-                    arrival_zone = pytz.timezone(site_dict['arrival_zone'])
-                    arrival = datetime(*site_dict['arrival'])
+                    arrival_zone = site_dict['arrival_zone']
+                    arrival = site_dict['arrival']
+
+                    if arrival_zone is not None and arrival is not None:
+                        tz = pytz.timezone(arrival_zone)
+                        dt = tz.localize(datetime(*arrival))
+                    else:
+                        dt = None
 
                     site = Site(
                         subdomain=site_dict['subdomain'],
                         title=site_dict['title'],
-                        arrival=arrival_zone.localize(arrival),
+                        arrival=dt,
                         no_image=site_dict['no_image'],
                         yes_images=site_dict['yes_images'],
                         favicon_name=site_dict['favicon_name'],
@@ -101,7 +108,9 @@ app.add_url_rule('/yes', 'yes', sited(yes), subdomain='<subdomain>')
 @app.route('/', subdomain='<subdomain>')
 @sited
 def root(site):
-    if site.is_here_yet():
+    if site.arrival is None:
+        return render_template('godot.html', title=site.title)
+    elif site.is_here_yet():
         return yes(site)
     else:
         return no(site)
