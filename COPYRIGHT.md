@@ -1,6 +1,6 @@
 ## Original code and templates.
 
-© 2012–2013 Will Thompson. Available under the MIT license. See `MIT-LICENSE.txt` in this tree.
+© 2012–2013 Will Thompson. Available under the MIT license. See `LICENSE` in this tree.
 
 
 ## jQuery 1.8.3
