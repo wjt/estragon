@@ -7,7 +7,7 @@
     and rage in Cambridge, UK.</p>
 
     <ul class='site-list'>
-{% for site in sites %}
+{% for site in sites|sort(attribute='title') %}
     <li>
       <a href="{{ url_for('root', subdomain=site.subdomain) }}">{{ site.title }}</a>
     </li>
