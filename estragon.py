@@ -128,7 +128,9 @@ def favicon(site):
 
 @app.route('/')
 def index():
-    return render_template('index.html', sites=g.sites.values())
+    sites = g.sites.values()
+    sites.sort(key=lambda s: s.title)
+    return render_template('index.html', sites=sites)
 
 @app.route('/sites/<subdomain>/img/<path:filename>')
 @sited
