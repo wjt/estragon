@@ -29,8 +29,8 @@ def before_request():
                     continue
 
                 try:
-                    arrival_zone = site_dict['arrival_zone']
-                    arrival = site_dict['arrival']
+                    arrival_zone = site_dict.get('arrival_zone')
+                    arrival = site_dict.get('arrival')
 
                     if arrival_zone is not None and arrival is not None:
                         tz = pytz.timezone(arrival_zone)
@@ -42,9 +42,9 @@ def before_request():
                         subdomain=site_dict['subdomain'],
                         title=site_dict['title'],
                         arrival=dt,
-                        no_image=site_dict['no_image'],
-                        yes_images=site_dict['yes_images'],
-                        favicon_name=site_dict['favicon_name'],
+                        no_image=site_dict.get('no_image'),
+                        yes_images=site_dict.get('yes_images', []),
+                        favicon_name=site_dict.get('favicon_name'),
                     )
                 except KeyError as e:
                     warnings.warn("KeyError when processing '%s': %s" % (site_dict, e))
