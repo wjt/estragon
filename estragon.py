@@ -12,7 +12,8 @@ app = Flask(__name__)
 app.config.from_envvar('ESTRAGON_SETTINGS', silent=True)
 
 Site = namedtuple('Site',
-    ['subdomain', 'title', 'arrival', 'no_image', 'yes_images', 'favicon_name'])
+    ['subdomain', 'title', 'arrival', 'no_image', 'yes_images', 'favicon_name',
+     'fireworks'])
 Site.is_here_yet = lambda self: self.arrival is not None and \
                                 pytz.UTC.localize(datetime.utcnow()) >= self.arrival
 
@@ -45,6 +46,7 @@ def before_request():
                         no_image=site_dict.get('no_image'),
                         yes_images=site_dict.get('yes_images', []),
                         favicon_name=site_dict.get('favicon_name'),
+                        fireworks=site_dict.get('fireworks', False),
                     )
                 except KeyError as e:
                     warnings.warn("KeyError when processing '%s': %s" % (site_dict, e))
@@ -98,7 +100,8 @@ def yes(site):
     return render_template('yes.html',
         haircut=haircut,
         pugs=pugs,
-        title=site.title)
+        title=site.title,
+        fireworks=site.fireworks)
 
 # By not decorating the functions with @sited directly, root() can pass a Site
 # rather than having to go back to a subdomain.

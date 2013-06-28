@@ -10,8 +10,9 @@
 <link href='http://fonts.googleapis.com/css?family=Bitter:400,700' rel='stylesheet' type='text/css'>
 <link rel=stylesheet type=text/css href="{{ url_for('static', filename='libs/jquery.countdown/1.6.2/jquery.countdown.css') }}">
 <link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/style.css') }}">
+{% block head %}{% endblock %}
 </head>
-<body>
+<body class='{% block bodyclass %}{% endblock %}'>
 {% block body %}{% endblock %}
 </body>
 </html>

@@ -36,6 +36,10 @@ body {
   width: 500px;
 }
 
+body.fireworks {
+  background: black;
+}
+
 #credits {
   margin-top: 1em;
   font-variant: small-caps;

@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% block title %}{{ title }}{% endblock %}
+{% block bodyclass %}{% if fireworks %}fireworks{% endif %}{% endblock %}
 {% block body %}
     <h1>Yes!!!</h1>
     <div id="puggrid">
@@ -14,4 +15,10 @@
       <img src="{{ puggy.next() }}" class=pug alt='pug' />
       <img src="{{ puggy.next() }}" class=pug alt='pug' />
     </div>
+{% if fireworks %}
+<script type="text/javascript" src="{{ url_for('static', filename='libs/fireworks.js') }}"></script>
+<script>
+Fireworks();
+</script>
+{% endif %}
 {% endblock %}
