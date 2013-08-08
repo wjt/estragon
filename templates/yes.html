@@ -3,6 +3,7 @@
 {% block bodyclass %}{% if fireworks %}fireworks{% endif %}{% endblock %}
 {% block body %}
     <h1>Yes!!!</h1>
+    {% if pugs %}
     <div id="puggrid">
       {% set puggy = cycler(*pugs) %}
       <img src="{{ puggy.next() }}" class=pug alt='pug' />
@@ -15,6 +16,9 @@
       <img src="{{ puggy.next() }}" class=pug alt='pug' />
       <img src="{{ puggy.next() }}" class=pug alt='pug' />
     </div>
+    {% else %}
+    <img src="{{ haircut }}" />
+    {% endif %}
 {% if fireworks %}
 <script type="text/javascript" src="{{ url_for('static', filename='libs/fireworks.js') }}"></script>
 <script>
