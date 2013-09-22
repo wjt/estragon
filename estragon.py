@@ -11,11 +11,12 @@ import pytz
 app = Flask(__name__)
 app.config.from_envvar('ESTRAGON_SETTINGS', silent=True)
 
-Site = namedtuple('Site',
-    ['subdomain', 'title', 'arrival', 'no_image', 'yes_images', 'favicon_name',
-     'fireworks'])
-Site.is_here_yet = lambda self: self.arrival is not None and \
-                                pytz.UTC.localize(datetime.utcnow()) >= self.arrival
+class Site(namedtuple('Site',
+                      ['subdomain', 'title', 'arrival', 'no_image',
+                       'yes_images', 'favicon_name', 'fireworks'])):
+    def is_here_yet(self):
+        return self.arrival is not None and \
+               pytz.UTC.localize(datetime.utcnow()) >= self.arrival
 
 @app.before_request
 def before_request():
