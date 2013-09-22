@@ -12,8 +12,10 @@ app = Flask(__name__)
 app.config.from_envvar('ESTRAGON_SETTINGS', silent=True)
 
 class Site(namedtuple('Site',
-                      ['subdomain', 'title', 'arrival', 'no_image',
-                       'yes_images', 'favicon_name', 'fireworks'])):
+                      ['subdomain', 'title', 'arrival',
+                       'no_image', 'no_answer',
+                       'yes_images', 'yes_answer',
+                       'favicon_name', 'fireworks'])):
     def is_here_yet(self):
         return self.arrival is not None and \
                pytz.UTC.localize(datetime.utcnow()) >= self.arrival
@@ -45,7 +47,9 @@ def before_request():
                         title=site_dict['title'],
                         arrival=dt,
                         no_image=site_dict.get('no_image'),
+                        no_answer=site_dict.get('no_answer'),
                         yes_images=site_dict.get('yes_images', []),
+                        yes_answer=site_dict.get('yes_answer'),
                         favicon_name=site_dict.get('favicon_name'),
                         fireworks=site_dict.get('fireworks', False),
                     )
@@ -85,6 +89,7 @@ def no(site):
                          subdomain=site.subdomain,
                          filename=site.no_image),
         title=site.title,
+        answer=site.no_answer,
         )
 
 def yes(site):
@@ -102,6 +107,7 @@ def yes(site):
         haircut=haircut,
         pugs=pugs,
         title=site.title,
+        answer=site.yes_answer,
         fireworks=site.fireworks)
 
 # By not decorating the functions with @sited directly, root() can pass a Site
@@ -113,7 +119,10 @@ app.add_url_rule('/yes', 'yes', sited(yes), subdomain='<subdomain>')
 @sited
 def root(site):
     if site.arrival is None:
-        return render_template('godot.html', title=site.title)
+        return render_template(
+            'godot.html',
+            title=site.title,
+            answer=site.no_answer)
     elif site.is_here_yet():
         return yes(site)
     else:

@@ -3,7 +3,7 @@
 {% block title %}{{ title }}{% endblock %}
 {% block bodyclass %}{% if fireworks %}fireworks{% endif %}{% endblock %}
 {% block body %}
-    <h1>Yes!!!</h1>
+    <h1>{{ answer|default('Yes!!!', true) }}</h1>
     {% if pugs %}
     <div id="puggrid">
       {% set puggy = cycler(*pugs) %}

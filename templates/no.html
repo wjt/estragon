@@ -2,7 +2,7 @@
 {% extends "layout.html" %}
 {% block title %}{{ title }}{% endblock %}
 {% block body %}
-    <h1>Not yet…</h1>
+    <h1>{{ answer|default('Not yet…', true) }}</h1>
     <img src="{{ no_image }}" />
     <div id="danielCountdown"></div>
     <script>
