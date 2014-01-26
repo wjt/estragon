@@ -70,3 +70,8 @@ a:hover {
 .site-list {
   list-style: none;
 }
+
+.img-nope {
+  max-width: 500px;
+}
+

@@ -3,7 +3,7 @@
 {% block title %}{{ title }}{% endblock %}
 {% block body %}
     <h1>{{ answer|default('Not yet…', true) }}</h1>
-    <img src="{{ no_image }}" />
+    <img src="{{ no_image }}" class='img-nope' />
     <div id="danielCountdown"></div>
     <script>
     $(function() {
