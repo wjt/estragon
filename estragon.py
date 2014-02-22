@@ -118,7 +118,7 @@ app.add_url_rule('/yes', 'yes', sited(yes), subdomain='<subdomain>')
 @app.route('/', subdomain='<subdomain>')
 @sited
 def root(site):
-    if site.arrival is None:
+    if site.arrival is None and site.no_image is None:
         return render_template(
             'godot.html',
             title=site.title,

@@ -4,6 +4,7 @@
 {% block body %}
     <h1>{{ answer|default('Not yet…', true) }}</h1>
     <img src="{{ no_image }}" class='img-nope' />
+    {% if arrival %}
     <div id="danielCountdown"></div>
     <script>
     $(function() {
@@ -21,4 +22,5 @@
                        "{{ url_for('yes', subdomain=site.subdomain) }}");
     });
     </script>
+    {% endif %}
 {% endblock %}
