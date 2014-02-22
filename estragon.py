@@ -14,6 +14,7 @@ app.config.from_envvar('ESTRAGON_SETTINGS', silent=True)
 class Site(namedtuple('Site',
                       ['subdomain', 'title', 'arrival',
                        'no_image', 'no_answer',
+                       'yes_template', 'name',
                        'yes_images', 'yes_answer',
                        'favicon_name', 'fireworks'])):
     def is_here_yet(self):
@@ -48,6 +49,8 @@ def before_request():
                         arrival=dt,
                         no_image=site_dict.get('no_image'),
                         no_answer=site_dict.get('no_answer'),
+                        yes_template=site_dict.get('yes_template'),
+                        name=site_dict.get('name'),
                         yes_images=site_dict.get('yes_images', []),
                         yes_answer=site_dict.get('yes_answer'),
                         favicon_name=site_dict.get('favicon_name'),
@@ -103,11 +106,13 @@ def yes(site):
     haircut = url_for('img',
                       subdomain=site.subdomain,
                       filename=site.no_image)
-    return render_template('yes.html',
+    return render_template(site.yes_template or 'yes.html',
         haircut=haircut,
         pugs=pugs,
         title=site.title,
         answer=site.yes_answer,
+        arrival=site.arrival,
+        name=site.name,
         fireworks=site.fireworks)
 
 # By not decorating the functions with @sited directly, root() can pass a Site

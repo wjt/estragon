@@ -1,0 +1,11 @@
+{# vim: set syntax=jinja: #}
+{% extends "layout.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block body %}
+    <h1>{{ answer|default('Yes!!!', true) }}</h1>
+    <img src="{{ haircut }}" />
+    <p>
+        <span class='madlib'>{{ name }}</span> was born on
+        <span class='madlib'>{{ arrival.strftime('%A %d %B %Y at %I:%M %p') }}</span>!
+    </p>
+{% endblock %}
