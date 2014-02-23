@@ -16,7 +16,9 @@ class Site(namedtuple('Site',
                        'no_image', 'no_answer',
                        'yes_template', 'name',
                        'yes_images', 'yes_answer',
-                       'favicon_name', 'fireworks'])):
+                       'favicon_name', 'fireworks',
+                       'deets',
+                      ])):
     def is_here_yet(self):
         return self.arrival is not None and \
                pytz.UTC.localize(datetime.utcnow()) >= self.arrival
@@ -55,6 +57,7 @@ def before_request():
                         yes_answer=site_dict.get('yes_answer'),
                         favicon_name=site_dict.get('favicon_name'),
                         fireworks=site_dict.get('fireworks', False),
+                        deets=site_dict.get('deets', {}),
                     )
                 except KeyError as e:
                     warnings.warn("KeyError when processing '%s': %s" % (site_dict, e))
@@ -106,6 +109,7 @@ def yes(site):
     haircut = url_for('img',
                       subdomain=site.subdomain,
                       filename=site.no_image)
+    # TODO: look just pass 'site' in.
     return render_template(site.yes_template or 'yes.html',
         haircut=haircut,
         pugs=pugs,
@@ -113,7 +117,8 @@ def yes(site):
         answer=site.yes_answer,
         arrival=site.arrival,
         name=site.name,
-        fireworks=site.fireworks)
+        fireworks=site.fireworks,
+        deets=site.deets)
 
 # By not decorating the functions with @sited directly, root() can pass a Site
 # rather than having to go back to a subdomain.
