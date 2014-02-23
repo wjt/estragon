@@ -108,7 +108,7 @@ def yes(site):
     random.shuffle(pugs)
     haircut = url_for('img',
                       subdomain=site.subdomain,
-                      filename=site.no_image)
+                      filename=site.no_image) if site.no_image else None
     # TODO: look just pass 'site' in.
     return render_template(site.yes_template or 'yes.html',
         haircut=haircut,
