@@ -6,7 +6,8 @@
     <img src="{{ haircut }}" />
     <p>
         <span class='madlib'>{{ deets.name }}</span> was born on
-        <span class='madlib'>{{ arrival.strftime('%A %d %B %Y at %I:%M %p') }}</span>,
+        <span class='madlib'>{{ arrival.strftime('%A %d %B %Y') }}</span> at
+        <span class='madlib'>{{ arrival.strftime('%l:%M %p') }}</span>,
         weighing <span class='madlib'>{{ deets.weight }}</span>!
         {% if deets.announcement_url %}
         (<a href='{{ deets.announcement_url }}'>announcement</a>)
