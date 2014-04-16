@@ -68,7 +68,26 @@ a:hover {
 }
 
 .site-list {
-  list-style: none;
+}
+
+.site-list figure {
+  width: 240px;
+  display: inline-block;
+  margin: 3px;
+
+  background: #01344d;
+  border: 2px solid #d91a21;
+  color: #71979f;
+}
+
+.site-list figcaption {
+  display: block;
+  padding: 0 0 5px 0;
+  color: #71979f;
+}
+
+.site-list .img-nope {
+  max-width: 240px;
 }
 
 .img-nope {

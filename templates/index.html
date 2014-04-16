@@ -7,12 +7,17 @@
     <p>Mechanically reclaimed bespoke countdown URLs, made with equal parts joy
     and rage in Cambridge, UK.</p>
 
-    <ul class='site-list'>
-{% for site in sites %}
-    <li>
-      <a href="{{ url_for('root', subdomain=site.subdomain) }}">{{ site.title }}</a>
-    </li>
-{% endfor %}
-    </ul>
+    <section class='site-list'>
+{% for site in sites -%}
+      <figure>
+        <a href="{{ url_for('root', subdomain=site.subdomain) }}">
+          {% if site.no_image %}
+          <img src="{{ url_for('img', subdomain=site.subdomain, filename=site.no_image) }}" class='img-nope' />
+          {% endif %}
+          <figcaption>{{ site.title }}</figcaption>
+        </a>
+      </figure>
+{%- endfor %}
+    </section>
 
 {% endblock %}
