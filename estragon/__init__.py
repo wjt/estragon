@@ -106,5 +106,6 @@ def dated_url_for(endpoint, **values):
 
 
 import estragon.views
+import estragon.db
 
 # vim: sts=4 sw=4 et

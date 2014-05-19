@@ -1,3 +1,5 @@
 Flask>=0.8
 pytz
 simplejson
+Flask-SQLAlchemy==1.0
+Flask-Security==1.7.2

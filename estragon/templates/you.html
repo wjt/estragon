@@ -1,0 +1,10 @@
+{# vim: set syntax=jinja: #}
+{% extends "layout.html" %}
+{% block title %}are you here yet?{% endblock %}
+{% block body %}
+    <h1>you are!</h1>
+
+    <p>Hi naïve human <span class='madlib'>#{{ current_user.id }}</span>!</p>
+
+    <p><a href='/logout'>leave</a></p>
+{% endblock %}

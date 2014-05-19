@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from flask import render_template, send_from_directory, request, url_for, abort, g, redirect
 import random
 import pytz
+from flask.ext.security import login_required, current_user
 
 
 def no(site):
@@ -84,6 +85,12 @@ def index():
     sites = g.sites.values()
     sites.sort(key=lambda s: s.title)
     return render_template('index.html', sites=sites)
+
+
+@app.route('/you')
+@login_required
+def you():
+    return render_template('you.html', you=current_user)
 
 
 @app.route('/', subdomain='www')
