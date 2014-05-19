@@ -1,4 +1,4 @@
-.*.swp
+.*.sw[op]
 settings.py
 *.pyc
 /env

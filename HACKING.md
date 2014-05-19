@@ -28,7 +28,7 @@ SERVER_NAME = 'hereyt.test:5000'
 ## Run the development server
 
 ```bash
-ESTRAGON_SETTINGS=settings.py python estragon.py
+ESTRAGON_SETTINGS=$PWD/settings.py ./runserver.py
 ```
 
 ## Hit up <http://hereyt.test:5000/> and away you go.

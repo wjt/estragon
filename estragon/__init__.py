@@ -185,7 +185,4 @@ def dated_url_for(endpoint, **values):
                 warnings.warn(e)
     return url_for(endpoint, **values)
 
-if __name__ == '__main__':
-    app.run()
-
 # vim: sts=4 sw=4 et
