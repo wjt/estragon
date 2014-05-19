@@ -1,6 +1,6 @@
 import os
 from datetime import datetime, timedelta
-from flask import Flask, render_template, send_from_directory, request, url_for, abort, g
+from flask import Flask, render_template, send_from_directory, request, url_for, abort, g, redirect
 import simplejson
 import random
 import warnings
@@ -154,6 +154,10 @@ def index():
     sites = g.sites.values()
     sites.sort(key=lambda s: s.title)
     return render_template('index.html', sites=sites)
+
+@app.route('/', subdomain='www')
+def www():
+    return redirect(url_for('.index'), 301)
 
 @app.route('/sites/<subdomain>/img/<path:filename>')
 @sited
