@@ -2,10 +2,12 @@
 from estragon import app, sited
 import os
 from datetime import datetime, timedelta
-from flask import render_template, send_from_directory, request, url_for, abort, g, redirect
+from flask import render_template, send_from_directory, request, url_for, abort, g, redirect, flash
 import random
 import pytz
-from flask.ext.security import login_required, current_user
+from flask.ext.security import login_required, current_user, login_user
+from flask.ext.security.utils import url_for_security
+from estragon.db import user_datastore, security
 
 
 def no(site):
@@ -96,6 +98,43 @@ def you():
 @app.route('/', subdomain='www')
 def www():
     return redirect(url_for('.index'), 301)
+
+
+@app.route('/login/foursquare')
+def foursquare_login():
+    import foursquare
+    client = foursquare.Foursquare(
+        client_id=app.config['FOURSQUARE_CLIENT_ID'],
+        client_secret=app.config['FOURSQUARE_CLIENT_SECRET'],
+        redirect_uri=url_for('.foursquare_login', _external=True))
+
+    if 'error' in request.args:
+        flash('Foursquare login failed: {}'.format(request.args['error']))
+        return redirect(url_for_security('login'), 307)
+    elif 'code' in request.args:
+        access_token = client.oauth.get_token(request.args['code'])
+        client.set_access_token(access_token)
+        foursquare_user = client.users()
+
+        try:
+            email = foursquare_user['user']['contact']['email']
+        except KeyError as e:
+            app.logger.debug("Failed to pluck email from {}".format(foursquare_user))
+            flash("Couldn't determine your email address from Foursquare")
+            return redirect(url_for_security('login'), 307)
+
+        user = user_datastore.find_user(email=email)
+        if user is None:
+            user = user_datastore.create_user(email=email)
+        if user.foursquare_access_token != access_token:
+            user.foursquare_access_token = access_token
+
+        user_datastore.commit()
+        login_user(user)
+        return redirect(url_for('.you'), 307)
+    else:
+        auth_uri = client.oauth.auth_url()
+        return redirect(auth_uri, 307)
 
 
 @app.route('/sites/<subdomain>/img/<path:filename>')

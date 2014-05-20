@@ -1,0 +1,25 @@
+{# vim: set syntax=jinja: #}
+{% extends "layout.html" %}
+{% block title %}Are You Logged In Yet?{% endblock %}
+{% block body %}
+{% from "security/_macros.html" import render_field_with_errors, render_field %}
+<h1>Login</h1>
+
+{% include "security/_messages.html" %}
+
+<p>
+  <a href="{{ url_for('foursquare_login') }}">Log in with Foursquare</a>
+</p>
+
+<h2>Or if you must…</h2>
+
+<form action="{{ url_for_security('login') }}" method="POST" name="login_user_form">
+  {{ login_user_form.hidden_tag() }}
+  {{ render_field_with_errors(login_user_form.email) }}
+  {{ render_field_with_errors(login_user_form.password) }}
+  {{ render_field_with_errors(login_user_form.remember) }}
+  {{ render_field(login_user_form.next) }}
+  {{ render_field(login_user_form.submit) }}
+</form>
+{% include "security/_menu.html" %}
+{% endblock %}
