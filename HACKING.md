@@ -3,6 +3,7 @@
 ```python
 DEBUG = True
 SERVER_NAME = 'hereyt.test:5000'
+SQLALCHEMY_DATABASE_URI = 'sqlite:////home/godot/src/estragon/instance/estragon.db'
 ```
 
 ## Create `instance/sites.json`

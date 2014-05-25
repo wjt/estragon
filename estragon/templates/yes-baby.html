@@ -7,12 +7,12 @@
     <img src="{{ haircut }}" class='img-nope' />
     {% endif %}
     <p>
-        <span class='madlib'>{{ deets.name }}</span> was born on
+        <span class='madlib'>{{ baby.name }}</span> was born on
         <span class='madlib'>{{ arrival.strftime('%A %d %B %Y') }}</span> at
         <span class='madlib'>{{ arrival.strftime('%l:%M %p') }}</span>,
-        weighing <span class='madlib'>{{ deets.weight }}</span>!
-        {% if deets.announcement_url %}
-        (<a href='{{ deets.announcement_url }}'>announcement</a>)
+        weighing <span class='madlib'>{{ baby.weight }}</span>!
+        {% if baby.announcement_url %}
+        (<a href='{{ baby.announcement_url }}'>announcement</a>)
         {% endif %}
     </p>
 {% endblock %}

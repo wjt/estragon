@@ -2,12 +2,12 @@
 from estragon import app, sited
 import os
 from datetime import datetime, timedelta
-from flask import render_template, send_from_directory, request, url_for, abort, g, redirect, flash
+from flask import render_template, send_from_directory, request, url_for, abort, redirect, flash
 import random
 import pytz
 from flask.ext.security import login_required, current_user, login_user
 from flask.ext.security.utils import url_for_security
-from estragon.db import user_datastore, security
+from estragon.db import Site, user_datastore
 
 
 def no(site):
@@ -31,8 +31,8 @@ def yes(site):
     if request.args.get('test') is None and not site.is_here_yet():
         abort(403)
 
-    pugs = [ url_for('img', subdomain=site.subdomain, filename=filename)
-             for filename in site.yes_images
+    pugs = [ url_for('img', subdomain=site.subdomain, filename=img.filename)
+             for img in site.yes_images
            ]
     random.shuffle(pugs)
     haircut = url_for('img',
@@ -45,9 +45,8 @@ def yes(site):
         title=site.title,
         answer=site.yes_answer,
         arrival=site.arrival,
-        name=site.name,
         fireworks=site.fireworks,
-        deets=site.deets)
+        baby=site.baby)
 
 
 # By not decorating the functions with @sited directly, root() can pass a Site
@@ -84,8 +83,7 @@ def favicon(site):
 
 @app.route('/')
 def index():
-    sites = g.sites.values()
-    sites.sort(key=lambda s: s.title)
+    sites = Site.query.order_by(Site.title)
     return render_template('index.html', sites=sites)
 
 
