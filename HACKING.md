@@ -18,11 +18,11 @@ SERVER_NAME = 'hereyt.test:5000'
 ## Add the top-level domain and subdomains to `/etc/hosts`
 
 ```
-127.0.0.1	hereyt.test
-127.0.0.1	is.daniel.hereyt.test
-127.0.0.1	is.skiing.hereyt.test
-127.0.0.1	is.santa.hereyt.test
-127.0.0.1	is.godot.hereyt.test
+::1	hereyt.test
+::1	is.daniel.hereyt.test
+::1	is.skiing.hereyt.test
+::1	is.santa.hereyt.test
+::1	is.godot.hereyt.test
 ```
 
 ## Run the development server

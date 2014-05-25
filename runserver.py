@@ -3,5 +3,5 @@
 
 if __name__ == '__main__':
     from estragon import app
-    app.run()
+    app.run('::1', threaded=True)
 
