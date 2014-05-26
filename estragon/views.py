@@ -116,8 +116,10 @@ def foursquare_login():
 
         try:
             email = foursquare_user['user']['contact']['email']
-        except KeyError as e:
-            app.logger.debug("Failed to pluck email from {}".format(foursquare_user))
+        except KeyError:
+            app.logger.debug(
+                "Failed to pluck email from {}".format(foursquare_user),
+                exc_info=True)
             flash("Couldn't determine your email address from Foursquare")
             return redirect(url_for_security('login'), 307)
 
