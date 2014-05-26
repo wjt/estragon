@@ -2,11 +2,11 @@
 from estragon import app, sited
 import os
 from datetime import datetime, timedelta
-from flask import render_template, send_from_directory, request, url_for, abort, redirect, flash
+from flask import render_template, send_from_directory, request, url_for, abort, redirect, flash, session
 import random
 import pytz
 from flask.ext.security import login_required, current_user, login_user
-from flask.ext.security.utils import url_for_security
+from flask.ext.security.utils import url_for_security, get_post_login_redirect
 from estragon.db import Site, user_datastore
 
 
@@ -131,9 +131,13 @@ def foursquare_login():
 
         user_datastore.commit()
         login_user(user)
-        return redirect(url_for('.you'), 307)
+        # TODO: stuff next into the session, pull it back out here
+        declared = session.pop('FOURSQUARE_POST_LOGIN_NEXT', None)
+        redirect_to = get_post_login_redirect(declared=declared)
+        return redirect(redirect_to, 307)
     else:
         auth_uri = client.oauth.auth_url()
+        session['FOURSQUARE_POST_LOGIN_NEXT'] = request.args.get('next')
         return redirect(auth_uri, 307)
 
 

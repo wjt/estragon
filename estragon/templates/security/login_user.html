@@ -8,7 +8,7 @@
 {% include "security/_messages.html" %}
 
 <p>
-  <a href="{{ url_for('foursquare_login') }}">Log in with Foursquare</a>
+  <a href="{{ url_for('foursquare_login', next=login_user_form.next.data) }}">Log in with Foursquare</a>
 </p>
 
 <h2>Or if you must…</h2>
