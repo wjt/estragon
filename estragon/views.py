@@ -7,7 +7,10 @@ import random
 import pytz
 from flask.ext.security import login_required, current_user, login_user
 from flask.ext.security.utils import url_for_security, get_post_login_redirect
-from estragon.db import Site, user_datastore
+from estragon.db import db, Site, Baby, user_datastore
+from flask.ext.wtf import Form
+from wtforms_alchemy import model_form_factory, ModelFormField
+ModelForm = model_form_factory(Form)
 
 
 def no(site):
@@ -67,6 +70,37 @@ def root(site):
         return yes(site)
     else:
         return no(site)
+
+
+class BabbyForm(ModelForm):
+    class Meta:
+        model = Baby
+
+
+class SiteForm(ModelForm):
+    class Meta:
+        model = Site
+
+    # baby = ModelFormField(BabbyForm)
+
+    # TODO: Desktop Chrome doesn't support type=datetime; Firefox doesn't
+    # support them at all. Damn you all. But I want datetime-local anyway.
+
+
+@app.route('/edit/<subdomain>', methods=['GET', 'POST'])
+@login_required
+@sited
+def edit(site):
+    if not current_user.can_edit(site):
+        abort(403)
+
+    form = SiteForm(obj=site)
+    if form.validate_on_submit():
+        form.populate_obj(site)
+        db.session.commit()
+        return redirect(url_for('.edit', subdomain=site.subdomain))
+
+    return render_template('edit.html', site=site, form=form)
 
 
 @app.route('/favicon.ico', subdomain='<subdomain>')

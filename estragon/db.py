@@ -36,6 +36,10 @@ class User(db.Model, UserMixin):
                             backref=db.backref('users', lazy='dynamic'))
     foursquare_access_token = db.Column(db.String(255))
 
+    def can_edit(self, site):
+        return self.has_role('admin') or \
+            self.has_role('edit:' + site.subdomain)
+
 
 class Site(db.Model):
     id = db.Column(db.Integer, primary_key=True)

@@ -1,4 +1,4 @@
-Flask>=0.8
+Flask>=0.10
 pytz
 simplejson
 Flask-SQLAlchemy==1.0
