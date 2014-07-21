@@ -3,11 +3,12 @@ import simplejson
 import pytz
 from datetime import datetime
 
-from estragon import app
+from estragon import app, site_images
 
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.security import Security, SQLAlchemyUserDatastore, \
     UserMixin, RoleMixin
+from sqlalchemy_utils.types.timezone import TimezoneType
 
 
 # Create database connection object
@@ -49,7 +50,7 @@ class Site(db.Model):
     # TODO: store UTC in the database! What was I thinking, storing local times
     # in the JSON? More human-editable but not a good idea.
     arrival_local = db.Column(db.DateTime, nullable=True)
-    arrival_zone = db.Column(db.String, nullable=True)
+    arrival_zone = db.Column(TimezoneType(backend='pytz'), nullable=True)
 
     no_image = db.Column(db.String(255), nullable=True)
     no_answer = db.Column(db.String(255), nullable=True)
@@ -64,10 +65,17 @@ class Site(db.Model):
     @property
     def arrival(self):
         if self.arrival_local and self.arrival_zone:
-            tz = pytz.timezone(self.arrival_zone)
-            return tz.localize(self.arrival_local)
+            return self.arrival_zone.localize(self.arrival_local)
         else:
             return None
+
+    @property
+    def no_image_url(self):
+        return site_images.url(self.no_image) if self.no_image is not None else None
+
+    @property
+    def yes_image_urls(self):
+        return [ site_images.url(y.filename) for y in self.yes_images ]
 
     def is_here_yet(self):
         return self.arrival is not None and \
@@ -95,13 +103,18 @@ def import_json_site(site_dict):
         return
 
     try:
+        subdomain = site_dict['subdomain']
         arrival = site_dict.get('arrival')
+
+        def img_filename(basename):
+            return os.path.join(subdomain, 'img', basename) if basename else None
+
         site = Site(
-            subdomain=site_dict['subdomain'],
+            subdomain=subdomain,
             title=site_dict['title'],
             arrival_local=datetime(*arrival) if arrival is not None else None,
             arrival_zone=site_dict.get('arrival_zone'),
-            no_image=site_dict.get('no_image'),
+            no_image=img_filename(site_dict.get('no_image')),
             no_answer=site_dict.get('no_answer'),
             yes_template=site_dict.get('yes_template'),
             yes_answer=site_dict.get('yes_answer'),
@@ -120,7 +133,7 @@ def import_json_site(site_dict):
             site.baby = baby
 
         for yes_image in site_dict.get('yes_images', []):
-            img = Image(filename=yes_image, site=site)
+            img = Image(filename=img_filename(yes_image), site=site)
             db.session.add(img)
 
         db.session.add(site)

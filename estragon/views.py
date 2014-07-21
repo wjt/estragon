@@ -1,6 +1,7 @@
-# vim: sts=4 sw=4 et
-from estragon import app, sited
+# vim: sts=4 sw=4 et fileencoding=utf-8
+from estragon import app, sited, site_images
 import os
+import re
 from datetime import datetime, timedelta
 from flask import render_template, send_from_directory, request, url_for, abort, redirect, flash, session
 import random
@@ -9,6 +10,11 @@ from flask.ext.security import login_required, current_user, login_user
 from flask.ext.security.utils import url_for_security, get_post_login_redirect
 from estragon.db import db, Site, Baby, user_datastore
 from flask.ext.wtf import Form
+from flask.ext.wtf.file import FileField, FileAllowed
+from wtforms.fields import SelectField, StringField
+from wtforms.fields.html5 import DateTimeLocalField
+from wtforms.validators import InputRequired, Optional, Length, ValidationError
+from wtforms_components import Unique, If
 from wtforms_alchemy import model_form_factory, ModelFormField
 ModelForm = model_form_factory(Form)
 
@@ -22,9 +28,7 @@ def no(site):
     return render_template('no.html',
         site=site,
         arrival=date,
-        no_image=url_for('img',
-                         subdomain=site.subdomain,
-                         filename=site.no_image),
+        no_image=site.no_image_url,
         title=site.title,
         answer=site.no_answer,
         )
@@ -34,13 +38,9 @@ def yes(site):
     if request.args.get('test') is None and not site.is_here_yet():
         abort(403)
 
-    pugs = [ url_for('img', subdomain=site.subdomain, filename=img.filename)
-             for img in site.yes_images
-           ]
+    pugs = site.yes_image_urls
     random.shuffle(pugs)
-    haircut = url_for('img',
-                      subdomain=site.subdomain,
-                      filename=site.no_image) if site.no_image else None
+    haircut = site.no_image_url
     # TODO: look just pass 'site' in.
     return render_template(site.yes_template or 'yes.html',
         haircut=haircut,
@@ -77,14 +77,90 @@ class BabbyForm(ModelForm):
         model = Baby
 
 
+# Not convinced that ModelForm is a net win
 class SiteForm(ModelForm):
     class Meta:
         model = Site
 
+    # Actually not sure this should be mutable
+    subdomain = StringField(
+        u'Subdomain',
+        description=u'is.my.novelty.domain',
+        validators=[
+            InputRequired(),
+            Length(min=1, max=255 - len('.' + (app.config['SERVER_NAME'] or ''))),
+            Unique(Site.subdomain, get_session=lambda: db.session),
+        ])
+    title = StringField(
+        u'Title',
+        description=u'Is My Novelty Domain Here Yet?',
+        validators=[
+            InputRequired(),
+            Length(min=1, max=255),
+        ])
+    # TODO: Optional?
+    arrival_local = DateTimeLocalField(
+        u'Countdown time',
+        format=u'%Y-%m-%dT%H:%M',
+        validators=[
+            Optional(),
+        ])
+    # TODO: sensible default, If(arrival_local, required)
+    arrival_zone = SelectField(
+        u'Countdown timezone',
+        validators=[
+            If(lambda form, field: form.arrival_local.data,
+               InputRequired(),
+               message=u'A timezone is required if you specify an arrival time'),
+        ],
+        choices=[
+            ('', u'(n/a)')
+        ] + [
+            (x, x.replace('_', ' '))
+            for x in pytz.common_timezones if x != 'UTC'
+        ])
+    no_image = FileField(
+        u'Image',
+        validators=[
+            Optional(),
+        ])
+    no_answer = StringField(
+        u'Pre-deadline title',
+        description=u'Not yet…',
+        validators=[
+            Optional(),
+            Length(max=255),
+        ])
+    yes_answer = StringField(
+        u'Post-deadline title',
+        description=u'Yes!!!',
+        validators=[
+            Optional(),
+            Length(max=255),
+        ])
     # baby = ModelFormField(BabbyForm)
 
-    # TODO: Desktop Chrome doesn't support type=datetime; Firefox doesn't
-    # support them at all. Damn you all. But I want datetime-local anyway.
+    def validate_subdomain(form, field):
+        for label in field.data.split(r'.'):
+            if len(label) == 0:
+                raise ValidationError('no empty labels please')
+            if len(label) > 63:
+                raise ValidationError('labels cannot be longer than 63 octets')
+            if not re.match(r'[-a-zA-Z0-9]+', label):
+                raise ValidationError('''labels may only contain alphanumeric characters and
+                                      hyphens. do your own punycode please''')
+            if label.startswith('-') or label.endswith('-'):
+                raise ValidationError('Labels may not start or end with hyphens')
+
+    def populate_obj(self, site):
+        del self.no_image
+        super(ModelForm, self).populate_obj(site)
+
+        no_image = request.files.get('no_image', None)
+        if no_image:
+            folder = os.path.join(site.subdomain, 'img')
+            filename = site_images.save(no_image, folder=folder)
+            site.no_image = filename
 
 
 @app.route('/edit/<subdomain>', methods=['GET', 'POST'])
@@ -100,7 +176,36 @@ def edit(site):
         db.session.commit()
         return redirect(url_for('.edit', subdomain=site.subdomain))
 
-    return render_template('edit.html', site=site, form=form)
+    return render_template(
+        'edit.html',
+        site=site,
+        form=form,
+        action=url_for('.edit', subdomain=site.subdomain),
+    )
+
+
+@app.route('/new', methods=['GET', 'POST'])
+@login_required
+def new():
+    form = SiteForm()
+    if form.validate_on_submit():
+        site = Site()
+        db.session.add(site)
+        form.populate_obj(site)
+        # FIXME: either key this off something immutable, or forbid changing subdomains
+        # FIXME: rate-limit?
+        role = user_datastore.find_or_create_role('edit:' + site.subdomain)
+        user_datastore.add_role_to_user(current_user, role)
+        db.session.commit()
+        return redirect(url_for('.edit', subdomain=site.subdomain))
+
+    return render_template(
+        'edit.html',
+        site=None,
+        form=form,
+        action=url_for('.new'),
+    )
+
 
 
 @app.route('/favicon.ico', subdomain='<subdomain>')

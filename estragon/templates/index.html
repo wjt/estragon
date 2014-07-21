@@ -1,18 +1,18 @@
 {# vim: set syntax=jinja: #}
 {% extends "layout.html" %}
-{% block title %}here.yt{% endblock %}
+{% block title %}{{ config['SERVER_NAME'] }}{% endblock %}
 {% block body %}
-    <h1>here.yt</h1>
+    <h1>{{ config['SERVER_NAME'] }}</h1>
 
     <p>Mechanically reclaimed bespoke countdown URLs, made with equal parts joy
-    and rage in Cambridge, UK.</p>
+    and rage in Cambridge and London, UK.</p>
 
     <section class='site-list'>
 {% for site in sites -%}
       <figure>
         <a href="{{ url_for('root', subdomain=site.subdomain) }}">
           {% if site.no_image %}
-          <img src="{{ url_for('img', subdomain=site.subdomain, filename=site.no_image) }}" class='img-nope' />
+          <img src="{{ site.no_image_url }}" class='img-nope' />
           {% endif %}
           <figcaption>{{ site.title }}</figcaption>
         </a>

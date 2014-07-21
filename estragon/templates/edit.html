@@ -1,14 +1,23 @@
 {# vim: set syntax=jinja: #}
 {% extends "layout.html" %}
-{% block title %}Edit {{ site.title }}{% endblock %}
+{% block title %}
+  {% if site %}
+    Edit {{ site.title }}
+  {% else %}
+    New site
+  {% endif %}
+{% endblock %}
 {% block body %}
-    <form method="POST" action="{{ url_for('.edit', subdomain=site.subdomain) }}">
+    <form method="POST" enctype='multipart/form-data' action="{{ action }}">
         {{ form.hidden_tag() }}
 
 {% macro with_errors(field) %}
+{# if field.flags.required %}
+  {% set kwargs['required'] = required %}
+{% endif #}
         <tr>
             <th>{{ field.label }}</th>
-            <td>{{ field }}
+            <td>{{ field(placeholder=field.description, **kwargs) }}
                 {% for error in field.errors %}
                 <br>{{ error|e }}
                 {% endfor %}
@@ -17,11 +26,22 @@
 {% endmacro %}
 
     <table>
-        {{ with_errors(form.subdomain) }}
-        {{ with_errors(form.title) }}
-        {{ with_errors(form.arrival_local) }}
+        {{ with_errors(form.subdomain,
+                       required='required',
+                       pattern='[A-Za-z0-9.-]+',
+                      ) }}
+        {{ with_errors(form.title, required='required') }}
+        {{ with_errors(form.arrival_local, step=0) }}
         {{ with_errors(form.arrival_zone) }}
-        {{ with_errors(form.no_image) }}
+        {{ with_errors(form.no_image, accept='image/*') }}
+        {% if site and site.no_image %}
+        <tr>
+            <th></th>
+            <td class='site-list'>
+                <img src="{{site.no_image_url}}" class='img-nope' />
+            </td>
+        </tr>
+        {% endif %}
         {{ with_errors(form.no_answer) }}
         {{ with_errors(form.yes_template) }}
         {{ with_errors(form.yes_answer) }}
@@ -29,6 +49,12 @@
         {{ with_errors(form.fireworks) }}
     </table>
 
-        <input type="submit" value="Go">
+        <input type="reset" value="Reset">
+        <input type="submit" value="Submit">
+        {% if site %}
+        <a href="{{ url_for('root', subdomain=site.subdomain) }}">
+          View
+        </a>
+        {% endif %}
     </form>
 {% endblock %}

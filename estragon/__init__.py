@@ -1,5 +1,6 @@
 import os
 from flask import Flask, url_for
+from flaskext.uploads import UploadSet, IMAGES, configure_uploads
 import warnings
 import functools
 
@@ -34,6 +35,12 @@ def dated_url_for(endpoint, **values):
             except OSError as e:
                 warnings.warn(e)
     return url_for(endpoint, **values)
+
+
+site_images = UploadSet('sites', IMAGES,
+                        default_dest=lambda app: os.path.join(app.instance_path,
+                                                              'sites'))
+configure_uploads(app, (site_images,))
 
 
 import estragon.views

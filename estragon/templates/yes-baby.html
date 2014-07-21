@@ -1,11 +1,9 @@
 {# vim: set syntax=jinja: #}
-{% extends "layout.html" %}
+{% extends "yes.html" %}
 {% block title %}{{ title }}{% endblock %}
 {% block body %}
-    <h1>{{ answer|default('Yes!!!', true) }}</h1>
-    {% if haircut %}
-    <img src="{{ haircut }}" class='img-nope' />
-    {% endif %}
+    {{ super() }}
+    {% if baby %}
     <p>
         <span class='madlib'>{{ baby.name }}</span> was born on
         <span class='madlib'>{{ arrival.strftime('%A %d %B %Y') }}</span> at
@@ -15,4 +13,5 @@
         (<a href='{{ baby.announcement_url }}'>announcement</a>)
         {% endif %}
     </p>
+    {% endif %}
 {% endblock %}
