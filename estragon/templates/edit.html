@@ -26,10 +26,12 @@
 {% endmacro %}
 
     <table>
+      {% if 'subdomain' in form: %}
         {{ with_errors(form.subdomain,
                        required='required',
                        pattern='[A-Za-z0-9.-]+',
                       ) }}
+      {% endif %}
         {{ with_errors(form.title, required='required') }}
         {{ with_errors(form.arrival_local, step=0) }}
         {{ with_errors(form.arrival_zone) }}

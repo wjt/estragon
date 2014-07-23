@@ -78,19 +78,11 @@ class BabbyForm(ModelForm):
 
 
 # Not convinced that ModelForm is a net win
-class SiteForm(ModelForm):
+class EditSiteForm(ModelForm):
     class Meta:
         model = Site
+        exclude = ['subdomain']
 
-    # Actually not sure this should be mutable
-    subdomain = StringField(
-        u'Subdomain',
-        description=u'is.my.novelty.domain',
-        validators=[
-            InputRequired(),
-            Length(min=1, max=255 - len('.' + (app.config['SERVER_NAME'] or ''))),
-            Unique(Site.subdomain, get_session=lambda: db.session),
-        ])
     title = StringField(
         u'Title',
         description=u'Is My Novelty Domain Here Yet?',
@@ -163,6 +155,21 @@ class SiteForm(ModelForm):
             site.no_image = filename
 
 
+class NewSiteForm(EditSiteForm):
+    class Meta:
+        model = Site
+        exclude = []
+
+    subdomain = StringField(
+        u'Subdomain',
+        description=u'is.my.novelty.domain',
+        validators=[
+            InputRequired(),
+            Length(min=1, max=255 - len('.' + (app.config['SERVER_NAME'] or ''))),
+            Unique(Site.subdomain, get_session=lambda: db.session),
+        ])
+
+
 @app.route('/edit/<subdomain>', methods=['GET', 'POST'])
 @login_required
 @sited
@@ -170,7 +177,7 @@ def edit(site):
     if not current_user.can_edit(site):
         abort(403)
 
-    form = SiteForm(obj=site)
+    form = EditSiteForm(obj=site)
     if form.validate_on_submit():
         form.populate_obj(site)
         db.session.commit()
@@ -187,12 +194,11 @@ def edit(site):
 @app.route('/new', methods=['GET', 'POST'])
 @login_required
 def new():
-    form = SiteForm()
+    form = NewSiteForm()
     if form.validate_on_submit():
         site = Site()
         db.session.add(site)
         form.populate_obj(site)
-        # FIXME: either key this off something immutable, or forbid changing subdomains
         # FIXME: rate-limit?
         role = user_datastore.find_or_create_role('edit:' + site.subdomain)
         user_datastore.add_role_to_user(current_user, role)
