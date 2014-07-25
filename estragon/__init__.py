@@ -1,6 +1,7 @@
 import os
 from flask import Flask, url_for
 from flaskext.uploads import UploadSet, IMAGES, configure_uploads
+from flask_mail import Mail
 import warnings
 import functools
 
@@ -41,6 +42,9 @@ site_images = UploadSet('sites', IMAGES,
                         default_dest=lambda app: os.path.join(app.instance_path,
                                                               'sites'))
 configure_uploads(app, (site_images,))
+
+
+mail = Mail(app)
 
 
 import estragon.views
