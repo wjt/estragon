@@ -11,7 +11,7 @@ manager = Manager(app)
 manager.add_command('runserver', Server(host='::1'))
 
 if __name__ == "__main__":
-    if '--threaded' not in sys.argv and '--processes' not in sys.argv:
+    if 'runserver' in sys.argv and '--threaded' not in sys.argv and '--processes' not in sys.argv:
         sys.argv.append('--threaded')
 
     manager.run()
