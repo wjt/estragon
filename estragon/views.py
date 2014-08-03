@@ -20,18 +20,7 @@ ModelForm = model_form_factory(Form)
 
 
 def no(site):
-    if request.args.get('test') is not None:
-        date = pytz.UTC.localize(datetime.utcnow()) + timedelta(0, 10)
-    else:
-        date = site.arrival
-
-    return render_template('no.html',
-        site=site,
-        arrival=date,
-        no_image=site.no_image_url,
-        title=site.title,
-        answer=site.no_answer,
-        )
+    return render_template('no.html', site=site)
 
 
 def yes(site):
@@ -40,16 +29,9 @@ def yes(site):
 
     pugs = site.yes_image_urls
     random.shuffle(pugs)
-    haircut = site.no_image_url
-    # TODO: look just pass 'site' in.
     return render_template(site.yes_template or 'yes.html',
-        haircut=haircut,
-        pugs=pugs,
-        title=site.title,
-        answer=site.yes_answer,
-        arrival=site.arrival,
-        fireworks=site.fireworks,
-        baby=site.baby)
+                           site=site,
+                           pugs=pugs)
 
 
 # By not decorating the functions with @sited directly, root() can pass a Site

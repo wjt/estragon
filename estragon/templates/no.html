@@ -1,21 +1,28 @@
 {# vim: set syntax=jinja: #}
 {% extends "layout.html" %}
-{% block title %}{{ title }}{% endblock %}
+{% block head %}
+<link rel='edit' href='{{ url_for('edit', subdomain=site.subdomain) }}'/>
+{% endblock %}
+{% block title %}{{ site.title }}{% endblock %}
 {% block body %}
-    <h1>{{ answer|default('Not yet…', true) }}</h1>
-    <img src="{{ no_image }}" class='img-nope' />
-    {% if arrival %}
+    <h1>{{ site.answer|default('Not yet…', true) }}</h1>
+
+    {% if site.no_image_url %}
+    <img src="{{ site.no_image_url }}" class='img-nope' />
+    {% endif %}
+
+    {% if site.arrival %}
     <div id="danielCountdown"></div>
     <script>
     $(function() {
         var arrival = new Date(
-            {{ arrival.year }},
-            {{ arrival.month }} - 1,
-            {{ arrival.day }},
-            {{ arrival.hour }},
-            {{ arrival.minute }},
-            {{ arrival.second }});
-        {% with o = arrival.utcoffset() %}
+            {{ site.arrival.year }},
+            {{ site.arrival.month }} - 1,
+            {{ site.arrival.day }},
+            {{ site.arrival.hour }},
+            {{ site.arrival.minute }},
+            {{ site.arrival.second }});
+        {% with o = site.arrival.utcoffset() %}
         var offset = {{ (o.days * 24 * 60) + (o.seconds / 60) }};
         {% endwith %}
         startCountdown('#danielCountdown', arrival, offset,
@@ -23,4 +30,5 @@
     });
     </script>
     {% endif %}
+
 {% endblock %}

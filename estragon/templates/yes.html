@@ -1,9 +1,12 @@
 {# vim: set syntax=jinja: #}
 {% extends "layout.html" %}
-{% block title %}{{ title }}{% endblock %}
-{% block bodyclass %}{% if fireworks %}fireworks{% endif %}{% endblock %}
+{% block head %}
+<link rel='edit' href='{{ url_for('edit', subdomain=site.subdomain) }}'/>
+{% endblock %}
+{% block title %}{{ site.title }}{% endblock %}
+{% block bodyclass %}{% if site.fireworks %}fireworks{% endif %}{% endblock %}
 {% block body %}
-    <h1>{{ answer|default('Yes!!!', true) }}</h1>
+    <h1>{{ site.answer|default('Yes!!!', true) }}</h1>
     {% if pugs %}
     <div id="puggrid">
       {% set puggy = cycler(*pugs) %}
@@ -11,16 +14,16 @@
       <img src="{{ puggy.next() }}" class=pug alt='pug' />
       <img src="{{ puggy.next() }}" class=pug alt='pug' />
       <img src="{{ puggy.next() }}" class=pug alt='pug' />
-      <img src="{{ haircut }}" class=haircut />
+      <img src="{{ site.no_image_url }}" class=haircut />
       <img src="{{ puggy.next() }}" class=pug alt='pug' />
       <img src="{{ puggy.next() }}" class=pug alt='pug' />
       <img src="{{ puggy.next() }}" class=pug alt='pug' />
       <img src="{{ puggy.next() }}" class=pug alt='pug' />
     </div>
-    {% else %}
-    <img src="{{ haircut }}" />
+    {% elif site.no_image_url %}
+    <img src="{{ site.no_image_url }}" class='img-nope' />
     {% endif %}
-{% if fireworks %}
+{% if site.fireworks %}
 <script type="text/javascript" src="{{ url_for('static', filename='libs/fireworks.js') }}"></script>
 <script>
 Fireworks();

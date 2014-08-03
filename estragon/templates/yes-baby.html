@@ -1,16 +1,19 @@
 {# vim: set syntax=jinja: #}
 {% extends "yes.html" %}
+{% block head %}
+<link rel='edit' href='{{ url_for('edit', subdomain=site.subdomain) }}'/>
+{% endblock %}
 {% block title %}{{ title }}{% endblock %}
 {% block body %}
     {{ super() }}
-    {% if baby %}
+    {% if site.baby %}
     <p>
-        <span class='madlib'>{{ baby.name }}</span> was born on
-        <span class='madlib'>{{ arrival.strftime('%A %d %B %Y') }}</span> at
-        <span class='madlib'>{{ arrival.strftime('%l:%M %p') }}</span>,
-        weighing <span class='madlib'>{{ baby.weight }}</span>!
-        {% if baby.announcement_url %}
-        (<a href='{{ baby.announcement_url }}'>announcement</a>)
+        <span class='madlib'>{{ site.baby.name }}</span> was born on
+        <span class='madlib'>{{ site.arrival.strftime('%A %d %B %Y') }}</span> at
+        <span class='madlib'>{{ site.arrival.strftime('%l:%M %p') }}</span>,
+        weighing <span class='madlib'>{{ site.baby.weight }}</span>!
+        {% if site.baby.announcement_url %}
+        (<a href='{{ site.baby.announcement_url }}'>announcement</a>)
         {% endif %}
     </p>
     {% endif %}
