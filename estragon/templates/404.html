@@ -1,0 +1,9 @@
+{# vim: set syntax=jinja: #}
+{% extends "layout.html" %}
+{% block title %}not found{% endblock %}
+{% block body %}
+    <h1>not found</h1>
+{% if subdomain %}
+    <p>Perhaps you'd like to <a href='{{ url_for("new", subdomain=subdomain) }}'>create it</a>?
+{% endif %}
+{% endblock %}

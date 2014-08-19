@@ -11,9 +11,9 @@ from flask.ext.security.utils import url_for_security, get_post_login_redirect
 from estragon.db import db, Site, Baby, user_datastore
 from flask.ext.wtf import Form
 from flask.ext.wtf.file import FileField, FileAllowed
-from wtforms.fields import SelectField, StringField
+from wtforms.fields import SelectField, StringField, HiddenField
 from wtforms.fields.html5 import DateTimeLocalField
-from wtforms.validators import InputRequired, Optional, Length, ValidationError
+from wtforms.validators import InputRequired, Optional, Length, ValidationError, AnyOf
 from wtforms_components import Unique, If
 from wtforms_alchemy import model_form_factory, ModelFormField
 ModelForm = model_form_factory(Form)
@@ -41,8 +41,12 @@ app.add_url_rule('/yes', 'yes', sited(yes), subdomain='<subdomain>')
 
 
 @app.route('/', subdomain='<subdomain>')
-@sited
-def root(site):
+def root(subdomain):
+    site = Site.query.filter_by(subdomain=subdomain).first()
+
+    if site is None:
+        return render_template('404.html', subdomain=subdomain), 404
+
     if site.arrival is None and site.no_image is None:
         return render_template(
             'godot.html',
@@ -112,6 +116,13 @@ class EditSiteForm(ModelForm):
             Optional(),
             Length(max=255),
         ])
+
+    yes_template = HiddenField(
+        validators=[
+            Optional(),
+            AnyOf(['yes-baby.html']),
+        ])
+
     # baby = ModelFormField(BabbyForm)
 
     def validate_subdomain(form, field):
@@ -186,6 +197,9 @@ def new():
         user_datastore.add_role_to_user(current_user, role)
         db.session.commit()
         return redirect(url_for('.edit', subdomain=site.subdomain))
+
+    if 'subdomain' in request.args:
+        form.subdomain.data = request.args['subdomain']
 
     return render_template(
         'edit.html',
@@ -277,3 +291,7 @@ def img(site, filename):
                                             site.subdomain,
                                             'img'),
                                filename)
+
+@app.errorhandler(404)
+def four_oh_four(error):
+    return render_template('404.html'), 404

@@ -10,6 +10,10 @@
 {% block body %}
     <form method="POST" enctype='multipart/form-data' action="{{ action }}">
         {{ form.hidden_tag() }}
+        {{ form.yes_template }}
+        {% for error in form.yes_template.error %}
+        <br>{{ error|e }}
+        {% endfor %}
 
 {% macro with_errors(field) %}
 {# if field.flags.required %}
@@ -45,7 +49,6 @@
         </tr>
         {% endif %}
         {{ with_errors(form.no_answer) }}
-        {{ with_errors(form.yes_template) }}
         {{ with_errors(form.yes_answer) }}
         {{ with_errors(form.favicon_name) }}
         {{ with_errors(form.fireworks) }}
